@@ -15,10 +15,10 @@ class PredictionsController < ApplicationController
     @prediction.song = params[:prediction][:song]
 
     # # Find Spotify song from user input
-    # RSpotify.authenticate("1af6192ff1eb4ab78a54e772f2956105", "111bee776bc9497d8064d222a2a3ce93")
+    RSpotify.authenticate("1af6192ff1eb4ab78a54e772f2956105", "111bee776bc9497d8064d222a2a3ce93")
     #
-    # sorry = RSpotify::Track.search("Sorry").first
-    # @prediction.song = sorry.name
+    sorry = RSpotify::Track.search("Sorry").first
+    @prediction.song = sorry.name
 
     # Open a AWS ML Realtime Endpoint
     region = 'us-east-1'
@@ -33,19 +33,19 @@ class PredictionsController < ApplicationController
     resp2 = ml.predict({
       ml_model_id: "ml-Syq31owIBgw",
       record: {
-        "SongID" => "0HcSC0BbA1H5zwGCr9xCON",
-        "SongName" => "I Want It That Way",
-        "danceability" => "0.687",
-        "energy" => "0.7",
-        "key" => "6",
-        "loudness" => "-5.74",
-        "mode" => "0",
-        "speechiness" => "0.0264",
-        "acousticness" => "0.246",
-        "instrumentalness" => "0",
-        "liveness" => "0.233",
-        "valence" => "0.488",
-        "tempo" => "99.042"
+        "SongID" => "2Oehrcv4Kov0SuIgWyQY9e",
+        "SongName" => "Demons",
+        "danceability" => "0.327",
+        "energy" => "0.71",
+        "key" => "3",
+        "loudness" => "-2.928",
+        "mode" => "1",
+        "speechiness" => "0.0547",
+        "acousticness" => "0.202",
+        "instrumentalness" => "9.00E-05",
+        "liveness" => "0.28",
+        "valence" => "0.375",
+        "tempo" => "179.561"
       },
       #predict_endpoint: "https://realtime.machinelearning.us-east-1.amazonaws.com",
       predict_endpoint: endpoint,
