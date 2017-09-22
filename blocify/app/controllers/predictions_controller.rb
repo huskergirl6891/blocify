@@ -81,18 +81,6 @@ class PredictionsController < ApplicationController
   end
 
   def authorize
-    # response = HTTParty.post("https://accounts.spotify.com/api/token", headers: { "Authorization" => "Basic " + spotify_client_id + ":" + spotify_client_secret },
-    #   body: {"grant_type": "client_credentials"})
-    # raise "Invalid authorization" if response.code != 200
-    # @auth_token = response["access_token"]
-    # @auth_token = "Bearer " + @auth_token
-
-    # grant = Base64.encode64("#{:SPOTIFY_CLIENT_ID}:#{:SPOTIFY_CLIENT_SECRET}").delete("\n")
-    # puts grant
-    # resp = RestClient.post('https://accounts.spotify.com/api/token',
-    #                    {'grant_type' => 'client_credentials'},
-    #                    {"Authorization" => "Basic #{grant}"})
-
     client_token = Base64.strict_encode64("#{ENV['SPOTIFY_CLIENT_ID']}:#{ENV['SPOTIFY_CLIENT_SECRET']}")
     spotify_token = RestClient.post("https://accounts.spotify.com/api/token",{"grant_type": "client_credentials"}, {"Authorization": "Basic #{client_token}"})
     @parsed_token = JSON.parse(spotify_token)
