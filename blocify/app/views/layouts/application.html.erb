@@ -2,13 +2,41 @@
 <html>
 <head>
   <title>Blocify</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
 <body>
+  <div class="container">
+    <ul class="nav nav-tabs">
+      <li><%= link_to "Home", root_path %></li>
+      <li><%= link_to "About", welcome_about_path %></li>
+      <li><%= link_to "Predictions", predictions_path %></li>
+    </ul>
+    <% if flash[:alert] %>
+      <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <% flash.each do |name, msg| %>
+          <% if msg.class == Array %>
+            <% msg.each do |message| %>
+              <%= content_tag :div, message, :id => "flash_#{name}" %>
+            <% end %>
+          <% else %>
+            <%= content_tag :div, msg, :id => "flash_#{name}" %>
+          <% end %>
+        <% end %>
+      </div>
+    <% elsif flash[:notice] %>
+      <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+    <br>
 
-<%= yield %>
+    <%= yield %>
+  </div>
 
 </body>
 </html>

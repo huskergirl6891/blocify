@@ -1,0 +1,15 @@
+<h1>New Prediction</h1>
+
+<div class="row">
+  <div class="col-md-8">
+    <%= form_for @prediction do |f| %>
+      <div class="form-group">
+        <%= f.label :song %>
+        <%= f.text_field :song, class: 'form-control', placeholder: "Enter song title" %>
+      </div>
+      <div class="form-group">
+        <%= f.submit "Submit", class: 'btn btn-success' %>
+      </div>
+    <% end %>
+  </div>
+</div>
