@@ -22,8 +22,7 @@ gem 'bootstrap-sass'
 gem 'figaro'
 gem 'aws-sdk', '~> 3'
 gem 'aws-sdk-rails'
-gem 'rspotify'
-gem 'httparty'
+gem 'rest-client'
 
 group :development, :test do
   gem 'byebug'
