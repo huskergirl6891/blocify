@@ -23,6 +23,7 @@ gem 'figaro'
 gem 'aws-sdk', '~> 3'
 gem 'aws-sdk-rails'
 gem 'rspotify'
+gem 'httparty'
 
 group :development, :test do
   gem 'byebug'

@@ -1,6 +1,10 @@
 class PredictionsController < ApplicationController
   require 'aws-sdk'
   require 'rspotify'
+  require 'httparty'
+  require 'json'
+
+  include HTTParty
 
   def index
     @predictions = Prediction.all
@@ -15,10 +19,12 @@ class PredictionsController < ApplicationController
     @prediction.song = params[:prediction][:song]
 
     # # Find Spotify song from user input
-    RSpotify.authenticate("1af6192ff1eb4ab78a54e772f2956105", "111bee776bc9497d8064d222a2a3ce93")
-    #
-    sorry = RSpotify::Track.search("Sorry").first
-    @prediction.song = sorry.name
+    # RSpotify.authenticate(spotify_client_id, spotify_clinet_secret)
+    # #
+    # sorry = RSpotify::Track.search("Sorry").first
+    # @prediction.song = sorry.name
+
+    token = initializeSpotify()
 
     # Open a AWS ML Realtime Endpoint
     region = 'us-east-1'
@@ -79,4 +85,21 @@ class PredictionsController < ApplicationController
       redirect_to predictions_path
     end
   end
+
+  base_uri "https://api.spotify.com"
+
+  def initializeSpotify()
+    response = HTTParty.post("https://accounts.spotify.com/api/token", headers: { "Authorization" => "Basic " + spotify_client_id + ":" + spotify_client_secret },
+      body: {"grant_type": "client_credentials"})
+    raise "Invalid authorization" if response.code != 200
+    @auth_token = response["access_token"]
+    @auth_token = "Bearer " + @auth_token
+  end
+
+  def get_song(text)
+    response = HTTParty.get("https://api.spotify.com/v1/search?q=#{text}&type=track", headers: { "Authorization" => @auth_token })
+    JSON.parse response.body
+  end
+
+
 end
