@@ -15,10 +15,6 @@ class PredictionsController < ApplicationController
     @prediction.song = params[:prediction][:song]
 
     # # Find Spotify song from user input
-    # RSpotify.authenticate("1af6192ff1eb4ab78a54e772f2956105", "111bee776bc9497d8064d222a2a3ce93")
-    #
-    # sorry = RSpotify::Track.search("Sorry").first
-    # @prediction.song = sorry.name
 
     # Open a AWS ML Realtime Endpoint
     region = 'us-east-1'
