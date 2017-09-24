@@ -1,6 +1,7 @@
 class PredictionsController < ApplicationController
   require 'aws-sdk'
-  require 'rspotify'
+  require 'json'
+  require 'rest-client'
 
   def index
     @predictions = Prediction.all
@@ -12,9 +13,12 @@ class PredictionsController < ApplicationController
 
   def create
     @prediction = Prediction.new
-    @prediction.song = params[:prediction][:song]
 
-    # # Find Spotify song from user input
+    # authorize Spotify with credentials
+    authorize
+
+    # search for song from user input and store result
+    @prediction.song = get_song(params[:prediction][:song])
 
     # Open a AWS ML Realtime Endpoint
     region = 'us-east-1'
@@ -75,4 +79,19 @@ class PredictionsController < ApplicationController
       redirect_to predictions_path
     end
   end
+
+  def authorize
+    client_token = Base64.strict_encode64("#{ENV['SPOTIFY_CLIENT_ID']}:#{ENV['SPOTIFY_CLIENT_SECRET']}")
+    spotify_token = RestClient.post("https://accounts.spotify.com/api/token",{"grant_type": "client_credentials"}, {"Authorization": "Basic #{client_token}"})
+    @parsed_token = JSON.parse(spotify_token)
+  end
+
+  def get_song(text)
+    searchURL = "https://api.spotify.com/v1/search?q=#{text}&type=track"
+    tracks = RestClient.get(searchURL, {"Authorization": "Bearer #{@parsed_token["access_token"]}"})
+    parsed_tracks = JSON.parse(tracks)
+    @first_song = parsed_tracks["tracks"]["items"][0]["name"]
+  end
+
+
 end
