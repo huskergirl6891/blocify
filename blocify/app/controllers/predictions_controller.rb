@@ -93,5 +93,6 @@ class PredictionsController < ApplicationController
     @first_song = parsed_tracks["tracks"]["items"][0]["name"]
   end
 
+  # def get_song_attributes
 
 end
