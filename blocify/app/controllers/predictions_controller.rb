@@ -15,10 +15,11 @@ class PredictionsController < ApplicationController
     @prediction = Prediction.new
 
     # authorize Spotify with credentials
-    authorize
+    authorize_spotify
 
     # search for song from user input and store result
-    @prediction.song = get_song(params[:prediction][:song])
+    song_info = get_song(params[:prediction][:song])
+    @prediction.song = song_info["SongName"]
 
     # Open a AWS ML Realtime Endpoint
     region = 'us-east-1'
@@ -26,7 +27,6 @@ class PredictionsController < ApplicationController
     resp = ml.create_realtime_endpoint({
       ml_model_id: "ml-Syq31owIBgw",
     })
-
     endpoint = resp.realtime_endpoint_info.endpoint_url
 
     # Generate a prediction
@@ -80,7 +80,7 @@ class PredictionsController < ApplicationController
     end
   end
 
-  def authorize
+  def authorize_spotify
     client_token = Base64.strict_encode64("#{ENV['SPOTIFY_CLIENT_ID']}:#{ENV['SPOTIFY_CLIENT_SECRET']}")
     spotify_token = RestClient.post("https://accounts.spotify.com/api/token",{"grant_type": "client_credentials"}, {"Authorization": "Basic #{client_token}"})
     @parsed_token = JSON.parse(spotify_token)
@@ -90,9 +90,17 @@ class PredictionsController < ApplicationController
     searchURL = "https://api.spotify.com/v1/search?q=#{text}&type=track"
     tracks = RestClient.get(searchURL, {"Authorization": "Bearer #{@parsed_token["access_token"]}"})
     parsed_tracks = JSON.parse(tracks)
-    @first_song = parsed_tracks["tracks"]["items"][0]["name"]
-  end
+    first_song_name = parsed_tracks["tracks"]["items"][0]["name"]
+    first_song_id = parsed_tracks["tracks"]["items"][0]["id"]
 
-  # def get_song_attributes
+    searchURL2 = "https://api.spotify.com/v1/audio-features/#{first_song_id}"
+    song_attributes = RestClient.get(searchURL2, {"Authorization": "Bearer #{@parsed_token["access_token"]}"})
+    parsed_song_attributes = JSON.parse(song_attributes)
+
+    song_data = parsed_song_attributes
+    song_data["SongName"] = first_song_name
+    puts song_data
+    song_data
+  end
 
 end
