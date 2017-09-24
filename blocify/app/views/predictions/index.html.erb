@@ -37,6 +37,13 @@
     </div>
   </div>
   <div class="col-md-4">
-    <%= link_to "New Prediction", new_prediction_path, class: 'btn btn-success' %>
+    <% if @model_status == "ready" %>
+      <%= link_to "New Prediction", new_prediction_path, class: 'btn btn-success' %><br><br>
+      <%= button_to "Delete Endpoint", new_endpoint_path, method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure you want to delete this endpoint?' } %><br><br>
+    <% elsif @model_status == "updating" %>
+      <p>Endpoint is being created.  Please refresh page.</p>
+    <% else %>
+      <%= link_to "Create Endpoint", endpoints_path, method: :post, class: 'btn btn-success' %><br><br>
+    <% end %>
   </div>
 </div>

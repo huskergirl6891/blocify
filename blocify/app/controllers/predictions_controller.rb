@@ -5,6 +5,20 @@ class PredictionsController < ApplicationController
 
   def index
     @predictions = Prediction.all
+    region = 'us-east-1'
+    aws_client = Aws::MachineLearning::Client.new(region: region)
+    resp = aws_client.get_ml_model({
+      ml_model_id: "ml-Syq31owIBgw",
+    })
+
+    if resp.endpoint_info.endpoint_status === "READY"
+      @model_status = "ready"
+    elsif resp.endpoint_info.endpoint_status === "UPDATING"
+      @model_status = "updating"
+    else
+      @model_status = "none"
+    end
+
   end
 
   def new
@@ -22,14 +36,16 @@ class PredictionsController < ApplicationController
     @prediction.song = song_info["SongName"]
 
     # Open a AWS ML Realtime Endpoint
-    region = 'us-east-1'
-    ml = Aws::MachineLearning::Client.new(region: region)
-    resp = ml.create_realtime_endpoint({
-      ml_model_id: "ml-Syq31owIBgw",
-    })
-    endpoint = resp.realtime_endpoint_info.endpoint_url
+    # region = 'us-east-1'
+    # ml = Aws::MachineLearning::Client.new(region: region)
+    # resp = ml.create_realtime_endpoint({
+    #   ml_model_id: "ml-Syq31owIBgw",
+    # })
+    # endpoint = resp.realtime_endpoint_info.endpoint_url
 
     # Generate a prediction
+    region = 'us-east-1'
+    ml = Aws::MachineLearning::Client.new(region: region)
     resp2 = ml.predict({
       ml_model_id: "ml-Syq31owIBgw",
       record: {
@@ -47,8 +63,8 @@ class PredictionsController < ApplicationController
         "valence" => song_info["valence"].to_s,
         "tempo" => song_info["tempo"].to_s
       },
-      #predict_endpoint: "https://realtime.machinelearning.us-east-1.amazonaws.com",
-      predict_endpoint: endpoint,
+      predict_endpoint: "https://realtime.machinelearning.us-east-1.amazonaws.com",
+      #predict_endpoint: endpoint,
     })
 
     if resp2.prediction.predicted_label == '1'
